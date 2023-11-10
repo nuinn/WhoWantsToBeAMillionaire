@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@400;700&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'PT Sans Narrow', sans-serif;
+  color: white;
+  background-color: black;
+}
+div{
+  /* border: 1px solid white; */
+}
+
+#root{
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+#container{
+  aspect-ratio: 4 / 3;
+  background-color: black;
+}
+#top{
+  height:67%;
+  width: 100%;
+  display: flex;
+}
+#logoContainer{
+  height: 100%;
+  width: 67%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#logo{
+  height: 100%;
+}
+
+#gameConsole{
+  width: 33%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+#lifelinesContainer{
+  height: 17%;
+  width: 100%;
+  display: flex;
+}
+#roundsContainer{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.round{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.round > div{
+  color: orange;
+  font-size: 22px;
+}
+.milestone > div{
+  color: white;
+}
+.roundNumber{
+  width: 30px;
+  text-align: right;
+}
+
+#bottom{
+  height: 33%;
+  width: 100%;
+  font-size: 30px;
+  /* position: relative; */
+}
+
+#questionContainer{
+  height: 50%;
+  width: 100%;
+  position: relative;
+  padding: 20px 0px;
+  overflow: hidden;
+  /* display: flex; */
+}
+
+#questionBorder{
+  width: 100%;
+  height: 80%;
+  background-color: purple;
+  position: absolute;
+  clip-path: polygon(0 49%, 4% 49%, 10% 0, 90% 0, 96% 49%, 100% 49%, 100% 51%, 96% 51%, 90% 100%, 10% 100%, 4% 51%, 0 51%);
+}
+
+#question{
+  width: 100%;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin: 20px 0px; */
+  /* background-color: aqua; */
+  position: absolute;
+  clip-path: polygon(4.5% 50%, 10.2% 3%, 89.8% 3%, 95.5% 50%, 89.8% 97%, 10.2% 97%);
+}
+
+#answersContainer{
+  height:50%;
+  display: flex;
+  flex-wrap: wrap;
+  /* position: relative; */
+}
+
+.answerBox{
+  width: 50%;
+  position: relative;
+}
+
+.answerBorder{
+  position: absolute;
+  height: 90%;
+  width: 100%;
+  background-color: purple;
+  clip-path: polygon(0 49%, 4% 49%, 10% 0, 90% 0, 96% 49%, 100% 49%, 100% 51%, 96% 51%, 90% 100%, 10% 100%, 4% 51%, 0 51%);
+}
+
+.answerContainer{
+  /* width: 50%; */
+  position: absolute;
+  height: 90%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 50px;
+  gap: 6px;
+  /* background-color: bisque; */
+  clip-path: polygon(4.5% 50%, 10.2% 3%, 89.8% 3%, 95.5% 50%, 89.8% 97%, 10.2% 97%);
+}
+
+.letter{
+  color: orange;
+}
+
+.answerContainer:hover * {
+  background-color: cornsilk;
+  color: black;
+}
+
+.answerContainer:hover{
+  background-color: cornsilk;
+  color: black;
+}
