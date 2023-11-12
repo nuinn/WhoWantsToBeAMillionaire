@@ -2,7 +2,6 @@ function generateRandomNumber(min, max) {
   const randomNumber = Math.floor(Math.random() * (max - min) + min);
   return randomNumber;
 }
-
 async function getData({ level, category }){
   const url = `https://quiz-api-ofkh.onrender.com/questions/random?level=${level}&category=${category}`;
   const response = await fetch(url);
@@ -55,7 +54,7 @@ function populatePage(container){
     roundNumber.innerText = i;
     round.appendChild(roundNumber);
     const prize = document.createElement('div');
-    prize.className.add = 'prize';
+    prize.className = 'prize';
     prize.innerText = prizeBank[i-1];
     round.appendChild(prize);
   }
@@ -94,22 +93,24 @@ function populatePage(container){
   // return bottom;
 }
 
-
 async function answerRandomizer(questionData){
   const answersData = await questionData.answers;
+  const correctAnswer = await questionData.correct;
   const answers = Object.values(answersData);
+  const answerPositionTracker = Object.entries(answersData);
+  answerPositionTracker.map((answer) => answer[0] === correctAnswer && answer.push('correct'));
   const answerSlots = [1,2,3,4];
   const loopIterations = answerSlots.length;
   for (let i = 0; i < loopIterations; i++) {
     const randomNumber = generateRandomNumber(0,answerSlots.length);
     const answerSlot = answerSlots.splice(randomNumber,1);
-    // const answerContainer = document.getElementsByClassName(`answer ${answerSlot}`);
-    // const answerContainer = document.querySelectorAll(`.answer,.${answerSlot}`);
-    const answerContainer = document.getElementById(`answer${answerSlot}`);
-    console.log(answerContainer);
+    const answerContainer = document.getElementById(`answer${answerSlot[0]}`);
     answerContainer.innerText = answers[i];
+    answerPositionTracker[i][0] = answerSlot[0];
   }
+  return answerPositionTracker;
 }
+
 
 
 async function initPage(){
@@ -119,13 +120,14 @@ async function initPage(){
   root.appendChild(container);
   populatePage(container);
   const questionData = await getData(gameSettings);
-  console.log(questionData);
-  // console.log(questionData.answers.length);
   const questionContainer = document.getElementById('question');
   questionContainer.innerText = questionData.question;
-  // const answers = await questionData.answers;
-  // console.log(answers);
   answerRandomizer(questionData);
+  const answerContainer = document.getElementsByClassName('answerContainer');
+  console.log(answerContainer);
+  answerContainer.onclick = (e) => {
+    console.log(e);
+  };
 }
 
 initPage();
