@@ -12,14 +12,134 @@ async function getData({ level, category }){
   questionObject.correct = data.correctAnswer;
   return questionObject;
 }
-const gameSettings = {
-  level: 'easy',
-  category: 'css'
-};
+function extractCorrectAnswer({ answerTrackerMatrix, gameSettings }){
+  const correctAnswerArray = answerTrackerMatrix.find(answer => answer.length === 3);
+  gameSettings.correctAnswer = correctAnswerArray[0];
+}
+function getAnswerContainer(e){
+  const selectedElement = e.target.localName;
+  let answerContainerClassNames;
+  if (selectedElement === 'div'){
+    answerContainerClassNames = e.target.className;
+  }
+  else {
+    answerContainerClassNames = e.target.parentElement.className;
+  }
+  const answerContainerHTMLCollection = document.getElementsByClassName(answerContainerClassNames);
+  const answerContainer = answerContainerHTMLCollection[0];
+  return answerContainer;
+}
+function rightAnswer({ answerContainer }){
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 100);
+  setTimeout(() => {
+    answerContainer.id = 'selected';
+  }, 200);
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 300);
+  setTimeout(() => {
+    answerContainer.id = 'selected';
+  }, 400);
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 500);
+  setTimeout(() => {
+    answerContainer.id = 'selected';
+  }, 600);
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 700);
+  setTimeout(() => {
+    answerContainer.id = 'selected';
+  }, 800);
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 900);
+}
+function wrongAnswer({ answerContainer }){
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 100);
+  setTimeout(() => {
+    answerContainer.removeAttribute('id');
+  }, 200);
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 300);
+  setTimeout(() => {
+    answerContainer.removeAttribute('id');
+  }, 400);
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 500);
+  setTimeout(() => {
+    answerContainer.removeAttribute('id');
+  }, 600);
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 700);
+  setTimeout(() => {
+    answerContainer.removeAttribute('id');
+  }, 800);
+  setTimeout(() => {
+    answerContainer.id = 'correct';
+  }, 900);
+}
+function nextRound({ selectedAnswerContainer, gameSettings }){
+  const previousRound = document.getElementById('currentRound');
+  previousRound && previousRound.removeAttribute('id');
+  selectedAnswerContainer.removeAttribute('id');
+  gameSettings.round++;
+  if (gameSettings.round === 6){
+    gameSettings.level = 'medium';
+  }
+  if (gameSettings.round === 11){
+    gameSettings.level = 'hard';
+  }
+  postQuestion(gameSettings);
+}
 
-// getData(gameSettings);
+function isCorrect({ selectedAnswerContainer, answerContainers, gameSettings }) {
+  if (selectedAnswerContainer.classList.contains(gameSettings.correctAnswer)){
+    const correctRhombus = document.getElementById('currentRhombus');
+    correctRhombus.classList.add('completed');
+    rightAnswer({ answerContainer: selectedAnswerContainer });
+    setTimeout(() => {
+      nextRound({ selectedAnswerContainer, gameSettings });
+    }, 1500);
+  }
+  else {
+    for (let i = 0; i < answerContainers.length; i++) {
+      const answerContainer = answerContainers[i];
+      if (answerContainer.classList.contains(gameSettings.correctAnswer)) {
+        wrongAnswer({ answerContainer });
+      }
+    }
+    setTimeout(() => {
+      location.reload();
+    }, 2000);
+  }
+}
+function selectGuess({ e, gameSettings }){
+  const selectedAnswerContainer = getAnswerContainer(e);
+  const answerContainers = document.getElementsByClassName('answerContainer');
+  if (selectedAnswerContainer.id === 'selected'){
+    isCorrect({ selectedAnswerContainer, answerContainers, gameSettings });
+    return;
+  }
+  for (let i = 0; i < answerContainers.length; i++) {
+    const answerContainer = answerContainers[i];
+    answerContainer.id === 'selected' && answerContainer.removeAttribute('id');
+  }
+  selectedAnswerContainer.id = 'selected';
+}
 
-function populatePage(container){
+function populatePage({ root, gameSettings }){
+  const container = document.createElement('div');
+  container.id = 'container';
+  root.appendChild(container);
   const top = document.createElement('div');
   const bottom = document.createElement('div');
   top.id = 'top';
@@ -49,11 +169,15 @@ function populatePage(container){
     round.classList.add(i);
     i % 5 === 0 && round.classList.add('milestone');
     roundsContainer.appendChild(round);
-    const roundNumber = document.createElement('div');
+    const roundNumber = document.createElement('span');
     roundNumber.className = 'roundNumber';
     roundNumber.innerText = i;
     round.appendChild(roundNumber);
-    const prize = document.createElement('div');
+    const rhombus = document.createElement('span');
+    rhombus.className = 'rhombus';
+    rhombus.innerText = '♦︎';
+    round.appendChild(rhombus);
+    const prize = document.createElement('span');
     prize.className = 'prize';
     prize.innerText = prizeBank[i-1];
     round.appendChild(prize);
@@ -82,6 +206,10 @@ function populatePage(container){
     answerContainer.className = 'answerContainer';
     answerContainer.classList.add(i);
     answerBox.appendChild(answerContainer);
+    const rhombus = document.createElement('span');
+    rhombus.className = 'rhombus';
+    rhombus.innerText = '♦︎';
+    answerContainer.appendChild(rhombus);
     const letter = document.createElement('span');
     letter.className = 'letter';
     letter.innerText = letterBank[i-1];
@@ -89,8 +217,10 @@ function populatePage(container){
     const answer = document.createElement('span');
     answer.id = `answer${i}`;
     answerContainer.appendChild(answer);
+    answerContainer.onclick = function clickGuess(e){
+      selectGuess({ e, gameSettings });
+    };
   }
-  // return bottom;
 }
 
 async function answerRandomizer(questionData){
@@ -105,29 +235,49 @@ async function answerRandomizer(questionData){
     const randomNumber = generateRandomNumber(0,answerSlots.length);
     const answerSlot = answerSlots.splice(randomNumber,1);
     const answerContainer = document.getElementById(`answer${answerSlot[0]}`);
+    answerContainer.removeAttribute('class');
     answerContainer.innerText = answers[i];
+    answers[i].length > 30 && answerContainer.classList.add('long');
+    answers[i].length > 50 && answerContainer.classList.add('verylong');
     answerPositionTracker[i][0] = answerSlot[0];
   }
   return answerPositionTracker;
 }
-
-
-
-async function initPage(){
-  const root = document.getElementById('root');
-  const container = document.createElement('div');
-  container.id = 'container';
-  root.appendChild(container);
-  populatePage(container);
+async function postQuestion(gameSettings){
   const questionData = await getData(gameSettings);
+  if (gameSettings.previousQuestions.includes(questionData.question)){
+    console.log('We\'ve had this question before!');
+    postQuestion(gameSettings);
+  }
+  gameSettings.previousQuestions.push(questionData.question);
   const questionContainer = document.getElementById('question');
   questionContainer.innerText = questionData.question;
-  answerRandomizer(questionData);
-  const answerContainer = document.getElementsByClassName('answerContainer');
-  console.log(answerContainer);
-  answerContainer.onclick = (e) => {
-    console.log(e);
+  const answerTrackerMatrix = await answerRandomizer(questionData);
+  extractCorrectAnswer({ answerTrackerMatrix, gameSettings });
+  const currentRoundHTMLCollection = document.getElementsByClassName(`round ${gameSettings.round}`);
+  const currentRound = currentRoundHTMLCollection[0];
+  console.log(currentRound);
+  const currentRhombus = currentRound.children[1];
+  currentRound.id = 'currentRound';
+  currentRhombus.id = 'currentRhombus';
+  console.log('Posted question gameSettings', gameSettings);
+}
+function defaultSettings(){
+  const gameSettings = {
+    level: 'easy',
+    category: 'css',
+    round: 1,
+    previousQuestions: [],
   };
+  return gameSettings;
+}
+
+async function initPage(){
+  const gameSettings = defaultSettings();
+  console.log('original GameSettings', gameSettings);
+  const root = document.getElementById('root');
+  populatePage({ root, gameSettings });
+  postQuestion(gameSettings);
 }
 
 initPage();
