@@ -264,7 +264,9 @@ async function postQuestion(gameSettings){
   else{
     gameSettings.previousQuestions.push(questionData.question);
     const questionContainer = document.getElementById('question');
+    questionContainer.removeAttribute('class');
     questionContainer.innerText = questionData.question;
+    questionData.question.length > 160 && questionContainer.classList.add('long');
     const answerTrackerMatrix = await answerRandomizer(questionData);
     extractCorrectAnswer({ answerTrackerMatrix, gameSettings });
     const currentRoundHTMLCollection = document.getElementsByClassName(`round ${gameSettings.round}`);
