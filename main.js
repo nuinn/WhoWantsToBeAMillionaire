@@ -89,7 +89,7 @@ function wrongAnswer({ answerContainer }){
 }
 function nextRound({ selectedAnswerContainer, gameSettings }){
   const previousRound = document.getElementById('currentRound');
-  previousRound && previousRound.removeAttribute('id');
+  previousRound && previousRound.removeAttribute('id'); // I think this line is redundant, but need to check.
   selectedAnswerContainer.removeAttribute('id');
   gameSettings.round++;
   if (gameSettings.round === 6){
@@ -98,9 +98,11 @@ function nextRound({ selectedAnswerContainer, gameSettings }){
   if (gameSettings.round === 11){
     gameSettings.level = 'hard';
   }
+  const nextCategory = provideCategory(gameSettings);
+  gameSettings.previousCategory = gameSettings.category;
+  gameSettings.category = nextCategory;
   postQuestion(gameSettings);
 }
-
 function isCorrect({ selectedAnswerContainer, answerContainers, gameSettings }) {
   if (selectedAnswerContainer.classList.contains(gameSettings.correctAnswer)){
     const correctRhombus = document.getElementById('currentRhombus');
@@ -108,7 +110,7 @@ function isCorrect({ selectedAnswerContainer, answerContainers, gameSettings }) 
     rightAnswer({ answerContainer: selectedAnswerContainer });
     setTimeout(() => {
       nextRound({ selectedAnswerContainer, gameSettings });
-    }, 1500);
+    }, 2000);
   }
   else {
     for (let i = 0; i < answerContainers.length; i++) {
@@ -243,29 +245,41 @@ async function answerRandomizer(questionData){
   }
   return answerPositionTracker;
 }
+
+function provideCategory({ category = undefined, previousCategory = undefined }) {
+  const availableCategories = ['html','css','javascript'];
+  if (category && previousCategory){
+    category === previousCategory && availableCategories.splice(availableCategories.indexOf(category),1);
+  }
+  const randomIndex = generateRandomNumber(0, availableCategories.length);
+  return availableCategories[randomIndex];
+}
+
 async function postQuestion(gameSettings){
   const questionData = await getData(gameSettings);
   if (gameSettings.previousQuestions.includes(questionData.question)){
     console.log('We\'ve had this question before!');
     postQuestion(gameSettings);
   }
-  gameSettings.previousQuestions.push(questionData.question);
-  const questionContainer = document.getElementById('question');
-  questionContainer.innerText = questionData.question;
-  const answerTrackerMatrix = await answerRandomizer(questionData);
-  extractCorrectAnswer({ answerTrackerMatrix, gameSettings });
-  const currentRoundHTMLCollection = document.getElementsByClassName(`round ${gameSettings.round}`);
-  const currentRound = currentRoundHTMLCollection[0];
-  console.log(currentRound);
-  const currentRhombus = currentRound.children[1];
-  currentRound.id = 'currentRound';
-  currentRhombus.id = 'currentRhombus';
-  console.log('Posted question gameSettings', gameSettings);
+  else{
+    gameSettings.previousQuestions.push(questionData.question);
+    const questionContainer = document.getElementById('question');
+    questionContainer.innerText = questionData.question;
+    const answerTrackerMatrix = await answerRandomizer(questionData);
+    extractCorrectAnswer({ answerTrackerMatrix, gameSettings });
+    const currentRoundHTMLCollection = document.getElementsByClassName(`round ${gameSettings.round}`);
+    const currentRound = currentRoundHTMLCollection[0];
+    console.log(currentRound);
+    const currentRhombus = currentRound.children[1];
+    currentRound.id = 'currentRound';
+    currentRhombus.id = 'currentRhombus';
+    console.log('Posted question gameSettings', gameSettings);
+  }
 }
-function defaultSettings(){
+function defaultSettings(provideCategory){
   const gameSettings = {
     level: 'easy',
-    category: 'css',
+    category: provideCategory({}),
     round: 1,
     previousQuestions: [],
   };
@@ -273,7 +287,7 @@ function defaultSettings(){
 }
 
 async function initPage(){
-  const gameSettings = defaultSettings();
+  const gameSettings = defaultSettings(provideCategory);
   console.log('original GameSettings', gameSettings);
   const root = document.getElementById('root');
   populatePage({ root, gameSettings });
