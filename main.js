@@ -18,44 +18,44 @@ function extractCorrectAnswer({ answerTrackerMatrix, gameSettings }){
 }
 function getAnswerContainer(e){
   const selectedElement = e.target.localName;
-  let answerContainerClassNames;
+  let answerContainerClassName;
   if (selectedElement === 'div'){
-    answerContainerClassNames = e.target.className;
+    answerContainerClassName = e.target.className;
   }
   else {
-    answerContainerClassNames = e.target.parentElement.className;
+    answerContainerClassName = e.target.parentElement.className;
   }
-  const answerContainerHTMLCollection = document.getElementsByClassName(answerContainerClassNames);
+  const answerContainerHTMLCollection = document.getElementsByClassName(answerContainerClassName);
   const answerContainer = answerContainerHTMLCollection[0];
   return answerContainer;
 }
-function rightAnswer({ answerContainer }){
+function rightAnswer({ selectedAnswerContainer }){
   setTimeout(() => {
-    answerContainer.id = 'correct';
+    selectedAnswerContainer.id = 'correct';
   }, 100);
   setTimeout(() => {
-    answerContainer.id = 'selected';
+    selectedAnswerContainer.id = 'selected';
   }, 200);
   setTimeout(() => {
-    answerContainer.id = 'correct';
+    selectedAnswerContainer.id = 'correct';
   }, 300);
   setTimeout(() => {
-    answerContainer.id = 'selected';
+    selectedAnswerContainer.id = 'selected';
   }, 400);
   setTimeout(() => {
-    answerContainer.id = 'correct';
+    selectedAnswerContainer.id = 'correct';
   }, 500);
   setTimeout(() => {
-    answerContainer.id = 'selected';
+    selectedAnswerContainer.id = 'selected';
   }, 600);
   setTimeout(() => {
-    answerContainer.id = 'correct';
+    selectedAnswerContainer.id = 'correct';
   }, 700);
   setTimeout(() => {
-    answerContainer.id = 'selected';
+    selectedAnswerContainer.id = 'selected';
   }, 800);
   setTimeout(() => {
-    answerContainer.id = 'correct';
+    selectedAnswerContainer.id = 'correct';
   }, 900);
 }
 function wrongAnswer({ answerContainer }){
@@ -87,10 +87,14 @@ function wrongAnswer({ answerContainer }){
     answerContainer.id = 'correct';
   }, 900);
 }
-function nextRound({ selectedAnswerContainer, gameSettings }){
+function nextRound({ selectedAnswerContainer, answerContainersArray, gameSettings }){
   const previousRound = document.getElementById('currentRound');
-  previousRound && previousRound.removeAttribute('id'); // I think this line is redundant, but need to check.
+  previousRound.removeAttribute('id');
   selectedAnswerContainer.removeAttribute('id');
+  answerContainersArray.forEach(answerContainer => {
+    answerContainer.classList.add('hover');
+    answerContainer.onclick = (e) => {selectGuess({ e, gameSettings });};
+  });
   gameSettings.round++;
   if (gameSettings.round === 6){
     gameSettings.level = 'medium';
@@ -103,39 +107,57 @@ function nextRound({ selectedAnswerContainer, gameSettings }){
   gameSettings.category = nextCategory;
   postQuestion(gameSettings);
 }
-function isCorrect({ selectedAnswerContainer, answerContainers, gameSettings }) {
+function isCorrect({ selectedAnswerContainer, answerContainersArray, gameSettings }) {
   if (selectedAnswerContainer.classList.contains(gameSettings.correctAnswer)){
     const correctRhombus = document.getElementById('currentRhombus');
     correctRhombus.classList.add('completed');
-    rightAnswer({ answerContainer: selectedAnswerContainer });
+    let x = 0;
+    const rightAnswer = setInterval(() => {
+      selectedAnswerContainer.id = 'correct';
+      if (++x === 9){
+        clearInterval(selectedAnswer);
+        clearInterval(rightAnswer);
+      }
+    },125);
+    const selectedAnswer = setInterval(()=>{selectedAnswerContainer.id = 'selected';},250);
     setTimeout(() => {
-      nextRound({ selectedAnswerContainer, gameSettings });
-    }, 2000);
+      nextRound({ selectedAnswerContainer, answerContainersArray, gameSettings });
+    }, 3000);
   }
   else {
-    for (let i = 0; i < answerContainers.length; i++) {
-      const answerContainer = answerContainers[i];
+    answerContainersArray.forEach(answerContainer =>{
       if (answerContainer.classList.contains(gameSettings.correctAnswer)) {
-        wrongAnswer({ answerContainer });
-      }
-    }
+        setInterval(()=>{answerContainer.id = 'correct';},125);
+        let x = 0;
+        const wrongAnswer = setInterval(() => {
+          answerContainer.removeAttribute('id');
+          ++x === 5 && clearInterval(wrongAnswer);
+        },250);
+      }});
     setTimeout(() => {
       location.reload();
-    }, 2000);
+    }, 3000);
   }
 }
 function selectGuess({ e, gameSettings }){
   const selectedAnswerContainer = getAnswerContainer(e);
   const answerContainers = document.getElementsByClassName('answerContainer');
+  const answerContainersArray = [...answerContainers];
   if (selectedAnswerContainer.id === 'selected'){
-    isCorrect({ selectedAnswerContainer, answerContainers, gameSettings });
-    return;
+    answerContainersArray.forEach(answerContainer => {
+      answerContainer.onclick = (e) => {
+        e.preventDefault();
+      };
+      answerContainer.classList.remove('hover');
+    });
+    isCorrect({ selectedAnswerContainer, answerContainersArray, gameSettings });
   }
-  for (let i = 0; i < answerContainers.length; i++) {
-    const answerContainer = answerContainers[i];
-    answerContainer.id === 'selected' && answerContainer.removeAttribute('id');
+  else{
+    answerContainersArray.forEach(answerContainer => {
+      answerContainer.id === 'selected' && answerContainer.removeAttribute('id');
+    });
+    selectedAnswerContainer.id = 'selected';
   }
-  selectedAnswerContainer.id = 'selected';
 }
 
 function populatePage({ root, gameSettings }){
@@ -206,6 +228,7 @@ function populatePage({ root, gameSettings }){
     answerBox.appendChild(answerBorder);
     const answerContainer = document.createElement('div');
     answerContainer.className = 'answerContainer';
+    answerContainer.classList.add('hover');
     answerContainer.classList.add(i);
     answerBox.appendChild(answerContainer);
     const rhombus = document.createElement('span');
@@ -219,9 +242,7 @@ function populatePage({ root, gameSettings }){
     const answer = document.createElement('span');
     answer.id = `answer${i}`;
     answerContainer.appendChild(answer);
-    answerContainer.onclick = function clickGuess(e){
-      selectGuess({ e, gameSettings });
-    };
+    answerContainer.onclick = (e) => {selectGuess({ e, gameSettings });};
   }
 }
 
@@ -241,6 +262,7 @@ async function answerRandomizer(questionData){
     answerContainer.innerText = answers[i];
     answers[i].length > 30 && answerContainer.classList.add('long');
     answers[i].length > 50 && answerContainer.classList.add('verylong');
+    answers[i].length > 100 && answerContainer.classList.add('jonasehapasado');
     answerPositionTracker[i][0] = answerSlot[0];
   }
   return answerPositionTracker;
