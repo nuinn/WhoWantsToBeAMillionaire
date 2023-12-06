@@ -4,15 +4,16 @@
 @import url('https://fonts.cdnfonts.com/css/copperplate-gothic-std');
 @import url('https://fonts.cdnfonts.com/css/copperplate-gothic-light');
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@900&display=swap');
 
 :root{
   --orange: #E18C1D;
   --yellow: #EDBF37;
   --green: #51941E;
+  --darkgreen: #25693E;
   --blue: #13106D;
   --purple: #5F449E;
 }
-
 
 *{
   margin: 0;
@@ -24,9 +25,6 @@
   background-color: black;
   user-select: none;
 }
-div{
-  /* border: 1px solid white; */
-}
 
 #root{
   height: 100vh;
@@ -34,24 +32,151 @@ div{
   display: flex;
   justify-content: center;
 }
+
 #container{
   aspect-ratio: 4 / 3;
-  background-color: black;
 }
+
 #top{
   height:67%;
   width: 100%;
   display: flex;
 }
+
 #logoContainer{
   height: 100%;
   width: 67%;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
+
+#logoContainer * {
+  transition: 1s ease;
+}
+
 #logo{
   height: 100%;
+  top: 1%;
+  position: relative;
+}
+
+#prizeHandler{
+  background: rgba(0, 0, 0, 0.5);
+  bottom: -20px;
+  height: 17%;
+  width: 100%;
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#prizeHandler > * {
+  font-size: 30px;
+}
+
+#prizeAnnouncer{
+  /* transition: 1s ease; */
+  opacity: 0;
+  background: none;
+  font-family: 'Copperplate Gothic Light', sans-serif;
+}
+
+#startFinish{
+  background-color: var(--orange);
+  right: 0;
+  position: absolute;
+  height: 100%;
+  width: 17%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  opacity: 0;
+}
+
+#logoContainer.hover:hover *, #logoContainer.endGame *, #logoContainer.startGame * {
+  opacity: 1;
+}
+
+#logoContainer.hover:hover #logo, #logoContainer.announce #logo, #logoContainer.endGame #logo, #logoContainer.startGame #logo {
+  filter: blur(5px);
+}
+
+#logoContainer.hover #startFinish:hover, #logoContainer.startGame #startFinish:hover {
+  background-color: var(--yellow);
+  color: black;
+  cursor: pointer;
+}
+
+#logoContainer.announce #prizeHandler{
+  /* bottom: -20px; */
+  animation: comeAndGo 3s;
+}
+
+@keyframes comeAndGo {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* #logoContainer.announce{
+  transition: none;
+} */
+
+#logoContainer.announce #prizeAnnouncer{
+  opacity: 1;
+  font-weight: 900;
+  animation: grow 3s;
+}
+
+@keyframes grow {
+  0% { font-size: 30px; }
+  100% { font-size: 50px; }
+}
+
+#logoContainer.announce #startFinish, #logoContainer.endGame #startFinish {
+  visibility: hidden;
+  opacity: 0;
+}
+
+#logoContainer .message{
+  background-color: var(--blue);
+  border: 3px solid white;
+  top: 1%;
+  width: 100%;
+  height: 16%;
+  /* z-index: 3; */
+  position: absolute;
+  overflow-x: hidden;
+  animation: show 1s;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  transition: none;
+}
+
+@keyframes show {
+  0% { top: -17%; }
+  50% { top: 2%; }
+  75% { top: 0%; }
+  100% { top: 1%; }
+}
+
+#logoContainer .hideMessage {
+  animation: hide 1s;
+  top: -17%;
+}
+
+@keyframes hide {
+  0% { top: 1%; }
+  100% { top: -25%; }
 }
 
 #gameConsole{
@@ -62,16 +187,62 @@ div{
   border-left: 3px solid var(--blue);
   border-bottom: 3px solid var(--blue);
 }
+
 #lifelinesContainer{
   height: 17%;
   width: 100%;
   display: flex;
+  justify-content: space-around;
+  gap: 15px;
+  padding: 15px 8px;
 }
+
+.lifeline{
+  border: 2px solid var(--blue);
+  border-top: 5px solid var(--blue);
+  border-bottom: 5px solid var(--blue);
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 24px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.lifeline > img{
+  height: 80%;
+  z-index: 0;
+  background: none;
+}
+
+#lifelinesContainer .hover:hover{
+  background-color: var(--darkgreen);
+  color:  rgb(25,25,25);
+}
+
+#lifelinesContainer .hover:hover img{
+  filter: invert(0.9);
+  background: none;
+}
+
+.used{
+  background-color: var(--orange);
+  color: rgb(25,25,25)
+}
+
+.used img{
+  filter: invert(0.9);
+}
+
 #roundsContainer{
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
+
 .round{
   flex: 1;
   display: flex;
@@ -79,6 +250,7 @@ div{
   gap: 4px;
   height: 20px;
 }
+
 .round > span{
   color: var(--orange);
   font-size: 20px;
@@ -86,21 +258,26 @@ div{
   /* font-family: 'Balthazar', serif; */
   font-family: 'Copperplate Gothic Light', sans-serif;
 }
+
 .milestone > span{
   color: white;
 }
+
 .roundNumber{
   width: 30px;
   text-align: right;
 }
+
 .round .rhombus{
   font-size: 14px;
   color: black;
   font-family: 'M PLUS Rounded 1c', sans-serif;
 }
+
 .round .prize{
   margin-left: 10px;
 }
+
 .round .completed{
   color: white;
 }
@@ -108,27 +285,36 @@ div{
 #currentRound{
   background-color: var(--orange);
 }
+
 #currentRound > span{
   background-color: var(--orange);
 }
+
 #currentRound > .roundNumber{
   color: white;
 }
+
 #currentRound > .prize{
   color: black;
   position: absolute;
   margin-left: 62px;
 }
+
+#currentRound.milestone > .prize{
+  color: white;
+}
+
 #currentRound > .rhombus{
   color: var(--orange);
 }
+
 #currentRound > .completed{
   animation: appear 1.5s;
   color: white;
   background-color: transparent;
   position: absolute;
   margin-left: 34px;
-  z-index: 2;
+  z-index: 1;
 }
 
 @keyframes appear {
@@ -140,7 +326,6 @@ div{
   height: 33%;
   width: 100%;
   font-size: 30px;
-  /* position: relative; */
 }
 
 #questionContainer{
@@ -149,7 +334,6 @@ div{
   position: relative;
   padding: 20px 0px;
   overflow: hidden;
-  /* display: flex; */
 }
 
 #questionContainer .long{
@@ -172,8 +356,6 @@ div{
   align-items: center;
   padding: 0px 90px;
   text-align: center;
-  /* margin: 20px 0px; */
-  /* background-color: aqua; */
   position: absolute;
   clip-path: polygon(4.5% 50%, 10.2% 3%, 89.8% 3%, 95.5% 50%, 89.8% 97%, 10.2% 97%);
 }
@@ -182,7 +364,6 @@ div{
   height:50%;
   display: flex;
   flex-wrap: wrap;
-  /* position: relative; */
 }
 
 .answerBox{
@@ -199,53 +380,57 @@ div{
 }
 
 .answerContainer{
-  /* width: 50%; */
   position: absolute;
   height: 90%;
   width: 100%;
   display: flex;
   align-items: center;
   padding-left: 34px;
-  padding-right: 38px;
+  padding-right: 42px;
   gap: 6px;
   clip-path: polygon(4.5% 50%, 10.2% 3%, 89.8% 3%, 95.5% 50%, 89.8% 97%, 10.2% 97%);
+}
+
+.disappear > * {
+  visibility: hidden;
 }
 
 .letter, .rhombus{
   color: var(--orange);
 }
+
 .rhombus{
   font-size: 12px;
 }
+
 .long{
   font-size: 22px;
 }
+
 .verylong{
   font-size: 18px;
 }
+
 .jonasehapasado{
   font-size: 14px;
+  padding-right: 4px;
 }
 
-.hover:hover{
+.answerContainer.hover:hover, .answerContainer.hover:hover * {
   background-color: var(--yellow);
   color: black;
   cursor: pointer;
 }
-.hover:hover * {
-  background-color: var(--yellow);
-  color: black;
-  cursor: pointer;
-}
-.hover:hover .letter, .hover:hover .rhombus{
+
+.answerContainer.hover:hover .letter, .answerContainer.hover:hover .rhombus{
   color: white;
 }
-
 
 #selected, #selected * {
   background-color: var(--orange);
   color: black;
 }
+
 #selected .letter, #selected .rhombus{
   color: white;
 }
@@ -254,7 +439,7 @@ div{
   background-color: var(--green);
   color: black;
 }
+
 #correct .letter, #correct .rhombus{
   color: white;
 }
-
