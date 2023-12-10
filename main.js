@@ -3,37 +3,35 @@ function generateRandomNumber({ min, max }) {
   return randomNumber;
 }
 
-function activateAnswerSelection({ gameSettings, audioLibrary }){
-  const answerContainers = document.getElementsByClassName('answerContainer');
-  const answerContainersArray = [...answerContainers];
-  answerContainersArray.forEach(answerContainer => {
-    answerContainer.classList.add('hover');
-    answerContainer.classList.remove('disappear');
-    answerContainer.onclick = (e) => { selectGuess({ e, answerContainersArray, gameSettings, audioLibrary });};
-  });
-  return answerContainersArray;
+async function getData({ level, category }){
+  const url = `https://quiz-api-ofkh.onrender.com/questions/random?level=${level}&category=${category}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  const questionObject = {};
+  questionObject.question = data.description;
+  questionObject.answers = data.answers;
+  questionObject.correct = data.correctAnswer;
+  return questionObject;
 }
 
-function unblockGame({ gameSettings, audioLibrary }) {
-  const logoContainer = document.getElementById('logoContainer');
-  logoContainer.classList.remove('announce');
-  gameSettings.round%5 !== 1 && logoContainer.classList.add('hover');
-  const answerContainersArray = activateAnswerSelection({ gameSettings, audioLibrary });
-  const fiftyFifty = document.getElementById('50');
-  if (!fiftyFifty.classList.contains('used')) {
-    fiftyFifty.classList.add('hover');
-    fiftyFifty.onclick = () => { halveAnswers({ fiftyFifty, gameSettings, audioLibrary }); };
-  }
-  const phoneFriend = document.getElementById('phone');
-  if (!phoneFriend.classList.contains('used')) {
-    phoneFriend.classList.add('hover');
-    phoneFriend.onclick = () => { phoneMum({ phoneFriend, gameSettings, audioLibrary }); };
-  }
-  const flip = document.getElementById('flip');
-  if (!flip.classList.contains('used')) {
-    flip.classList.add('hover');
-    flip.onclick = () => { flipQuestion({ flip, answerContainersArray, gameSettings, audioLibrary }); };
-  }
+function getAudio() {
+  const library = {};
+  library.startGame = new Audio('./audio/startGame.mp3');
+  library.easyQuestion = new Audio('./audio/easyQuestion.mp3');
+  library.easyQuestion.loop = true;
+  library.mediumQuestion = new Audio('./audio/mediumQuestion.mp3');
+  library.mediumQuestion.loop = true;
+  library.hardQuestion = new Audio('./audio/hardQuestion.mp3');
+  library.hardQuestion.loop = true;
+  library.correct = new Audio('./audio/correct.mp3');
+  library.incorrect = new Audio('./audio/incorrect.mp3');
+  library.finalAnswer = new Audio('./audio/finalAnswer.mp3');
+  library.fifty = new Audio('./audio/fifty.mp3');
+  library.message = new Audio('./audio/message.mp3');
+  library.flip = new Audio('./audio/flip.mp3');
+  library.win = new Audio('./audio/gameWin.mp3');
+  library.walk = new Audio('./audio/walk.mp3');
+  return library;
 }
 
 function audioHandler({ audioLibrary, sound }) {
@@ -87,6 +85,54 @@ function audioHandler({ audioLibrary, sound }) {
   }
 }
 
+function activateAnswerSelection({ gameSettings, audioLibrary }){
+  const answerContainers = document.getElementsByClassName('answerContainer');
+  const answerContainersArray = [...answerContainers];
+  answerContainersArray.forEach(answerContainer => {
+    answerContainer.classList.add('hover');
+    answerContainer.classList.remove('disappear');
+    answerContainer.onclick = (e) => { selectGuess({ e, answerContainersArray, gameSettings, audioLibrary }); };
+  });
+  return answerContainersArray;
+}
+
+function unblockGame({ gameSettings, audioLibrary }) {
+  const logoContainer = document.getElementById('logoContainer');
+  logoContainer.classList.remove('announce');
+  gameSettings.round%5 !== 1 && logoContainer.classList.add('hover');
+  const answerContainersArray = activateAnswerSelection({ gameSettings, audioLibrary });
+  const fiftyFifty = document.getElementById('50');
+  if (!fiftyFifty.classList.contains('used')) {
+    fiftyFifty.classList.add('hover');
+    fiftyFifty.onclick = () => { halveAnswers({ fiftyFifty, gameSettings, audioLibrary }); };
+  }
+  const phoneFriend = document.getElementById('phone');
+  if (!phoneFriend.classList.contains('used')) {
+    phoneFriend.classList.add('hover');
+    phoneFriend.onclick = () => { phoneMum({ phoneFriend, gameSettings, audioLibrary }); };
+  }
+  const flip = document.getElementById('flip');
+  if (!flip.classList.contains('used')) {
+    flip.classList.add('hover');
+    flip.onclick = () => { flipQuestion({ flip, answerContainersArray, gameSettings, audioLibrary }); };
+  }
+}
+
+function blockGame({ answerContainersArray }) {
+  answerContainersArray.forEach(answerContainer => {
+    answerContainer.onclick = (e) => { e.preventDefault();};
+    answerContainer.classList.remove('hover');
+  });
+  const lifelineContainers = document.getElementsByClassName('lifeline');
+  const lifelineContainersArray = [...lifelineContainers];
+  lifelineContainersArray.forEach(lifelineContainer => {
+    lifelineContainer.onclick = (e) => { e.preventDefault();};
+    lifelineContainer.classList.remove('hover');
+  });
+  const logoContainer = document.getElementById('logoContainer');
+  logoContainer.classList.remove('hover');
+}
+
 function walk({ gameSettings, answerContainersArray, audioLibrary }) {
   audioHandler({ sound: 'off', audioLibrary });
   audioHandler({ sound: 'walk', audioLibrary });
@@ -95,6 +141,76 @@ function walk({ gameSettings, answerContainersArray, audioLibrary }) {
   prizeAnnouncer.innerText = `Te llevas ${gameSettings.currentPrize} a casa.`;
   const logoContainer = document.getElementById('logoContainer');
   logoContainer.classList.add('endGame');
+}
+
+function chooseGameMusic({ gameSettings, audioLibrary }){
+  gameSettings.level === 'easy' && audioHandler({ audioLibrary, sound: 'easyQuestion'});
+  gameSettings.level === 'medium' && audioHandler({ audioLibrary, sound: 'mediumQuestion' });
+  gameSettings.level === 'hard' && audioHandler({ audioLibrary, sound: 'hardQuestion' });
+}
+
+async function answerRandomizer({ questionData }){
+  const answersData = await questionData.answers;
+  const correctAnswer = await questionData.correct;
+  const answers = Object.values(answersData);
+  const answerPositionTracker = Object.entries(answersData);
+  answerPositionTracker.map((answer) => answer[0] === correctAnswer && answer.push('correct'));
+  const answerSlots = [1,2,3,4];
+  const answerSlotsQuantity = 4;
+  for (let i = 0; i < answerSlotsQuantity; i++) {
+    const randomNumber = generateRandomNumber({ min: 0, max: answerSlots.length });
+    const answerSlot = answerSlots.splice(randomNumber,1);
+    const answerContainer = document.getElementById(`answer${answerSlot[0]}`);
+    answerContainer.removeAttribute('class');
+    answerContainer.innerText = answers[i];
+    answers[i].length > 30 && answerContainer.classList.add('long');
+    answers[i].length > 50 && answerContainer.classList.add('verylong');
+    answers[i].length > 100 && answerContainer.classList.add('jonasehapasado');
+    answerPositionTracker[i][0] = answerSlot[0];
+  }
+  return answerPositionTracker;
+}
+
+function extractCorrectAnswer({ answerTrackerMatrix, gameSettings }){
+  const correctAnswerArray = answerTrackerMatrix.find(answer => answer.length === 3);
+  gameSettings.correctAnswer = correctAnswerArray[0];
+}
+
+async function postQuestion({ gameSettings, audioLibrary }){
+  const questionData = await getData(gameSettings);
+  gameSettings.previousQuestions.includes(questionData.question) && postQuestion({ gameSettings, audioLibrary });
+  chooseGameMusic({ gameSettings, audioLibrary });
+  gameSettings.previousQuestions.push(questionData.question);
+  const questionContainer = document.getElementById('question');
+  questionContainer.removeAttribute('class');
+  questionContainer.innerText = questionData.question;
+  questionData.question.length > 160 && questionContainer.classList.add('long');
+  const answerTrackerMatrix = await answerRandomizer({ questionData });
+  extractCorrectAnswer({ answerTrackerMatrix, gameSettings });
+  const currentRoundHTMLCollection = document.getElementsByClassName(`round ${gameSettings.round}`);
+  const currentRound = currentRoundHTMLCollection[0];
+  const currentRhombus = currentRound.children[1];
+  currentRound.id = 'currentRound';
+  currentRhombus.id = 'currentRhombus';
+}
+
+function provideCategory({ category = undefined, previousCategory = undefined }) {
+  const availableCategories = ['html','css','javascript'];
+  if (category && previousCategory){
+    category === previousCategory && availableCategories.splice(availableCategories.indexOf(category),1);
+  }
+  const randomIndex = generateRandomNumber({ min: 0, max: availableCategories.length });
+  return availableCategories[randomIndex];
+}
+
+function defaultSettings(){
+  const gameSettings = {
+    level: 'easy',
+    category: provideCategory({}),
+    round: 1,
+    previousQuestions: [],
+  };
+  return gameSettings;
 }
 
 function nextRound({ selectedAnswerContainer, answerContainersArray, previousRound, gameSettings, audioLibrary }){
@@ -203,21 +319,6 @@ function isCorrect({ selectedAnswerContainer, answerContainersArray, gameSetting
   }
 }
 
-function blockGame({ answerContainersArray }) {
-  answerContainersArray.forEach(answerContainer => {
-    answerContainer.onclick = (e) => { e.preventDefault();};
-    answerContainer.classList.remove('hover');
-  });
-  const lifelineContainers = document.getElementsByClassName('lifeline');
-  const lifelineContainersArray = [...lifelineContainers];
-  lifelineContainersArray.forEach(lifelineContainer => {
-    lifelineContainer.onclick = (e) => { e.preventDefault();};
-    lifelineContainer.classList.remove('hover');
-  });
-  const logoContainer = document.getElementById('logoContainer');
-  logoContainer.classList.remove('hover');
-}
-
 function getAnswerContainer(e){
   const selectedElement = e.target.localName;
   let answerContainerClassName;
@@ -247,45 +348,6 @@ function selectGuess({ e, answerContainersArray, gameSettings, audioLibrary }){
     });
     selectedAnswerContainer.id = 'selected';
   }
-}
-
-function provideCategory({ category = undefined, previousCategory = undefined }) {
-  const availableCategories = ['html','css','javascript'];
-  if (category && previousCategory){
-    category === previousCategory && availableCategories.splice(availableCategories.indexOf(category),1);
-  }
-  const randomIndex = generateRandomNumber({ min: 0, max: availableCategories.length });
-  return availableCategories[randomIndex];
-}
-
-function defaultSettings(){
-  const gameSettings = {
-    level: 'easy',
-    category: provideCategory({}),
-    round: 1,
-    previousQuestions: [],
-  };
-  return gameSettings;
-}
-
-function getAudio() {
-  const library = {};
-  library.startGame = new Audio('./audio/startGame.mp3');
-  library.easyQuestion = new Audio('./audio/easyQuestion.mp3');
-  library.easyQuestion.loop = true;
-  library.mediumQuestion = new Audio('./audio/mediumQuestion.mp3');
-  library.mediumQuestion.loop = true;
-  library.hardQuestion = new Audio('./audio/hardQuestion.mp3');
-  library.hardQuestion.loop = true;
-  library.correct = new Audio('./audio/correct.mp3');
-  library.incorrect = new Audio('./audio/incorrect.mp3');
-  library.finalAnswer = new Audio('./audio/finalAnswer.mp3');
-  library.fifty = new Audio('./audio/fifty.mp3');
-  library.message = new Audio('./audio/message.mp3');
-  library.flip = new Audio('./audio/flip.mp3');
-  library.win = new Audio('./audio/gameWin.mp3');
-  library.walk = new Audio('./audio/walk.mp3');
-  return library;
 }
 
 function getAnswerContainersMatrix(){
@@ -362,12 +424,12 @@ function removeAnswer({ answerNumber }){
   const removedAnswer = removedAnswerHTMLCollection[0];
   removedAnswer.classList.add('disappear');
   removedAnswer.classList.remove('hover');
-  removedAnswer.onclick = (e) => { e.preventDefault();};
+  removedAnswer.onclick = (e) => { e.preventDefault(); };
 }
 
 function halveAnswers({ fiftyFifty, gameSettings, audioLibrary }){
   audioHandler({ sound: 'fifty', audioLibrary });
-  fiftyFifty.onclick = (e) => { e.preventDefault();};
+  fiftyFifty.onclick = (e) => { e.preventDefault(); };
   fiftyFifty.classList.remove('hover');
   fiftyFifty.classList.add('used');
   const possibleAnswers = [1,2,3,4];
@@ -378,69 +440,6 @@ function halveAnswers({ fiftyFifty, gameSettings, audioLibrary }){
     const randomIncorrectAnswer = possibleAnswers.splice(randomNumber,1);
     removeAnswer({ answerNumber: randomIncorrectAnswer });
   }
-}
-
-async function getData({ level, category }){
-  const url = `https://quiz-api-ofkh.onrender.com/questions/random?level=${level}&category=${category}`;
-  const response = await fetch(url);
-  const data = await response.json();
-  const questionObject = {};
-  questionObject.question = data.description;
-  questionObject.answers = data.answers;
-  questionObject.correct = data.correctAnswer;
-  return questionObject;
-}
-
-function chooseGameMusic({ gameSettings, audioLibrary }){
-  gameSettings.level === 'easy' && audioHandler({ audioLibrary, sound: 'easyQuestion'});
-  gameSettings.level === 'medium' && audioHandler({ audioLibrary, sound: 'mediumQuestion' });
-  gameSettings.level === 'hard' && audioHandler({ audioLibrary, sound: 'hardQuestion' });
-}
-
-function extractCorrectAnswer({ answerTrackerMatrix, gameSettings }){
-  const correctAnswerArray = answerTrackerMatrix.find(answer => answer.length === 3);
-  gameSettings.correctAnswer = correctAnswerArray[0];
-}
-
-async function answerRandomizer({ questionData }){
-  const answersData = await questionData.answers;
-  const correctAnswer = await questionData.correct;
-  const answers = Object.values(answersData);
-  const answerPositionTracker = Object.entries(answersData);
-  answerPositionTracker.map((answer) => answer[0] === correctAnswer && answer.push('correct'));
-  const answerSlots = [1,2,3,4];
-  const answerSlotsQuantity = 4;
-  for (let i = 0; i < answerSlotsQuantity; i++) {
-    const randomNumber = generateRandomNumber({ min: 0, max: answerSlots.length });
-    const answerSlot = answerSlots.splice(randomNumber,1);
-    const answerContainer = document.getElementById(`answer${answerSlot[0]}`);
-    answerContainer.removeAttribute('class');
-    answerContainer.innerText = answers[i];
-    answers[i].length > 30 && answerContainer.classList.add('long');
-    answers[i].length > 50 && answerContainer.classList.add('verylong');
-    answers[i].length > 100 && answerContainer.classList.add('jonasehapasado');
-    answerPositionTracker[i][0] = answerSlot[0];
-  }
-  return answerPositionTracker;
-}
-
-async function postQuestion({ gameSettings, audioLibrary }){
-  const questionData = await getData(gameSettings);
-  gameSettings.previousQuestions.includes(questionData.question) && postQuestion({ gameSettings, audioLibrary });
-  chooseGameMusic({ gameSettings, audioLibrary });
-  gameSettings.previousQuestions.push(questionData.question);
-  const questionContainer = document.getElementById('question');
-  questionContainer.removeAttribute('class');
-  questionContainer.innerText = questionData.question;
-  questionData.question.length > 160 && questionContainer.classList.add('long');
-  const answerTrackerMatrix = await answerRandomizer({ questionData });
-  extractCorrectAnswer({ answerTrackerMatrix, gameSettings });
-  const currentRoundHTMLCollection = document.getElementsByClassName(`round ${gameSettings.round}`);
-  const currentRound = currentRoundHTMLCollection[0];
-  const currentRhombus = currentRound.children[1];
-  currentRound.id = 'currentRound';
-  currentRhombus.id = 'currentRhombus';
-  console.log(gameSettings);
 }
 
 async function startGame({ logoContainer, gameSettings, audioLibrary }){
