@@ -178,7 +178,10 @@ function extractCorrectAnswer({ answerTrackerMatrix, gameSettings }){
 
 async function postQuestion({ gameSettings, audioLibrary }){
   const questionData = await getData(gameSettings);
-  gameSettings.previousQuestions.includes(questionData.question) && postQuestion({ gameSettings, audioLibrary });
+  if (gameSettings.previousQuestions.includes(questionData.question)) {
+    postQuestion({ gameSettings, audioLibrary });
+    return;
+  }
   chooseGameMusic({ gameSettings, audioLibrary });
   gameSettings.previousQuestions.push(questionData.question);
   const questionContainer = document.getElementById('question');

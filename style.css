@@ -211,6 +211,7 @@
 #lifelinesContainer .hover:hover{
   background-color: var(--darkgreen);
   color:  rgb(25,25,25);
+  cursor: pointer;
 }
 
 #lifelinesContainer .hover:hover img{
