@@ -8,7 +8,7 @@
     <li><a href="#overview">Overview</a></li>
     <li><a href="#features">Features</a></li>
     <li><a href="#technologies-used">Technologies Used</a></li>
-    <li><a href="project-preview">Project Preview</a></li>
+    <li><a href="#project-preview">Project Preview</a></li>
     <li><a href="#accessing-the-website">Accessing the Website</a></li>
     <li><a href="#playing-the-game">Playing the Game</a></li>
      <li><a href="#installation">Installation</a></li>
@@ -38,13 +38,13 @@ This project is a <b>Who Wants to be a Millionaire</b> style game built with van
 
 ## Project Preview
 
-### Home ![foto](./screengrabs/lose.png)
-### Players ![foto](./screengrabs/5050.png)
-### Fixtures ![foto](./screengrabs/phoneafriend.png)
+### Phone a Friend ![foto](./img/phoneafriend.png)
+### Losing screen ![foto](./img/lose.png)
+### 50-50 ![foto](./img/5050.png)
 
 ## Accessing the Website
 
-ou can play the game directly at: <a>Game Website</a>.
+You can play the game directly at: <a>Game Website</a>.
 Please be patient when starting the game—since the API used for trivia questions is not owned by the developer, it may take up to a minute for the questions to load.
 
 ## Playing the Game
