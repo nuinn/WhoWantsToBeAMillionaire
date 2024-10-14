@@ -36,11 +36,23 @@ This project is a <b>Who Wants to be a Millionaire</b> style game built with van
   <li><b>In-Game Sound Effects</b>: Audio cues play when a lifeline is used or when an answer is revealed, enhancing the game experience.</li>
 </ul>
 
+## Technologies Used
+
+This project is designed to showcase the power of Virtual DOM manipulation and Vanilla JavaScript and, as such, is deliberately minimalistic in terms of technologies, operating through only 3 files: `index.html`, `style.css` and `main.js` (excluding media).
+
+<ul>
+  <li><b>JavaScript (ES6+)</b>: Core language used to build the game logic and handle dynamic interactions.</li>
+  <li><b>Virtual DOM Manipulation</b>: For dynamic updates to the game interface.</li>
+  <li><b>CSS3</b>b: Styling for the interface, including keyframes animations.</li>
+  <li><b>HTML5</b>: Essentially a boilerplate with one root container to which DOM commands are applied.</li>
+</ul>
+
 ## Project Preview
 
+### In game ![foto](./img/select.png)
 ### Phone a Friend ![foto](./img/phoneafriend.png)
-### Losing screen ![foto](./img/lose.png)
 ### 50-50 ![foto](./img/5050.png)
+### Losing screen ![foto](./img/lose.png)
 
 ## Accessing the Website
 
@@ -67,7 +79,7 @@ To install Who Wants To Be A Millionaire locally, follow these steps:
 ```bash
 git clone https://github.com/nuinn/whowantstobeamillionaire.git
 ```
-<li>Open the index.html file in your preferred browser.
+<li>Open the `index.html` file in your preferred browser.
 </ol>
 
 ## Future Improvements
