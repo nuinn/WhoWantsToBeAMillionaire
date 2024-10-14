@@ -7,10 +7,10 @@
   <ol>
     <li><a href="#overview">Overview</a></li>
     <li><a href="#features">Features</a></li>
-    <li><a href="#how-it-works">How It Works</a></li>
-    <li><a href="#styling-and-design">Styling and Design</a></li>
+    <li><a href="#technologies-used">Technologies Used</a></li>
     <li><a href="project-preview">Project Preview</a></li>
-    <li><a href="#using-the-web-app">Using the Web app</a></li>
+    <li><a href="#accessing-the-website">Accessing the Website</a></li>
+    <li><a href="#playing-the-game">Playing the Game</a></li>
      <li><a href="#installation">Installation</a></li>
     <li><a href="#future-improvements">Future Improvements</a></li>
   </ol>
@@ -36,6 +36,12 @@ This project is a <b>Who Wants to be a Millionaire</b> style game built with van
   <li><b>In-Game Sound Effects</b>: Audio cues play when a lifeline is used or when an answer is revealed, enhancing the game experience.</li>
 </ul>
 
+## Project Preview
+
+### Home ![foto](./screengrabs/lose.png)
+### Players ![foto](./screengrabs/5050.png)
+### Fixtures ![foto](./screengrabs/phoneafriend.png)
+
 ## Accessing the Website
 
 ou can play the game directly at: <a>Game Website</a>.
@@ -44,7 +50,54 @@ Please be patient when starting the game—since the API used for trivia questio
 ## Playing the Game
 
 <ul>
-  <li>Start the game by pressing "Comenzar Juego"</li>
+  <li>Start the game by pressing "¿Comenzar Juego?"</li>
+  <li>Please wait while the questions are retrieved from an external API (this may take up to a minute)</li>
+  <li>Click on the answer you think is right. Click it again to confirm or click another.</li>
+  <li>Click a lifeline at the top right to activate it. Use them wisely as each one can only be used once per game!</li>
+  <li>Any wrong answer ends the game and you will only be awarded the amount from the previous checkpoint (if applicable).</li>
+  <li>Hovering over the logo will offer the user the opportunity to walk away with the money they have already in the bank (providing it is not a checkpoint level).</li>
 </ul>
 
+## Installation
+To install Who Wants To Be A Millionaire locally, follow these steps:
 
+<ol>
+<li>Clone the repository:
+  
+```bash
+git clone https://github.com/nuinn/whowantstobeamillionaire.git
+```
+<li>Open the index.html file in your preferred browser.
+</ol>
+
+## Future Improvements
+<ol>
+  <li><b>Mobile & Tablet Responsiveness</b>: Improving the design for better usability on smaller screens (responsive web design).</li>
+  <li><b>Backend with REST API</b>: Plan to implement a backend that allows:</li>
+  <ol>
+    <li>User registration and login</li>
+    <li>Creation, modification and deletion of user-created quizzes.</li>
+    <li>Tracking of quiz plays and statistics</li>
+  </ol>
+  <li><b>Possible Application:</b>Teacher/Student Integration:</li>
+  <ol>
+    <li><b>Teacher Role</b>: Allow teachers to create quizzes and track students’ progress through a login-based system.</li>
+    <li><b>Student Role</b>: Enable students to practice quizzes assigned by their teachers.</li>
+    <li><b>Progress Tracking</b>: Teachers will be able to monitor student progress over time.</li>
+  </ol>
+</ol>
+
+<br>
+
+Feel free to contribute to Who Wants To Be A Millionaire by submitting pull requests or reporting issues on GitHub. Your feedback is valuable in improving the application and addressing community needs effectively.
+
+<br>
+
+<h3 align="center">Licensed and Developed by</h3>
+
+<p align="center">Marc Dilley</p>
+<p align="center">
+<a href = "mailto:marcdilley@gmail.com"><img src="https://img.shields.io/badge/-Gmail-%23333?style=for-the-badge&logo=gmail&logoColor=white" target="_blank"></a>
+    <a href="https://www.linkedin.com/in/marc-dilley-288407a1/" target="_blank"><img src="https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white" target="_blank"></a> 
+  <a href="https://github.com/nuinn/"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a>
+</p>
