@@ -57,7 +57,7 @@ This project is designed to showcase the power of Virtual DOM manipulation and V
 
 ## Accessing the Website
 
-You can play the game directly at: <a>Game Website</a>.
+You can play the game <a href="https://qqsm-domtree.vercel.app/">here</a>.
 Please be patient when starting the game—since the API used for trivia questions is not owned by the developer, it may take up to a minute for the questions to load.
 
 ## Playing the Game
