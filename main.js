@@ -7,7 +7,6 @@ async function getData({ level, category }){
   const url = `https://quiz-api-ofkh.onrender.com/questions/random?level=${level}&category=${category}`;
   const response = await fetch(url);
   const data = await response.json();
-  console.log(data);
   const questionObject = {};
   questionObject.question = data.description;
   questionObject.answers = data.answers;
@@ -187,7 +186,7 @@ async function postQuestion({ gameSettings, audioLibrary }){
   gameSettings.previousQuestions.push(questionData.question);
   const questionContainer = document.getElementById('question');
   questionContainer.removeAttribute('class');
-  questionContainer.innerText = questionData.question;
+  questionContainer.innerText = `${gameSettings.category.toUpperCase()}: ${questionData.question}`;
   questionData.question.length > 160 && questionContainer.classList.add('long');
   const answerTrackerMatrix = await answerRandomizer({ questionData });
   extractCorrectAnswer({ answerTrackerMatrix, gameSettings });
