@@ -24,6 +24,7 @@ This project is a <b>Who Wants to be a Millionaire</b> style game built with van
 
 <ul>
   <li><b>Dynamic Question Display</b>: Questions are displayed randomly without repetition throughout the game session.</li>
+  <li><b>Multiple Categories</b>: Categories are randomized and the same category will not appear more than twice in a row.</li>
   <li><b>Randomized Answer Options</b>: Answers are displayed in random order, ensuring the correct answer doesn’t appear in the same position every time.</li>
   <li><b>Progressive Difficulty</b>: Question difficulty increases as the player advances.</li>
   <li><b>Interactive Answer Selection</b>: Answer choices are highlighted when selected. The first click highlights the answer, and the second confirms it, revealing whether the choice was correct or not.</li>
