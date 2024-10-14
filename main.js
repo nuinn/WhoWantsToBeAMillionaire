@@ -7,6 +7,7 @@ async function getData({ level, category }){
   const url = `https://quiz-api-ofkh.onrender.com/questions/random?level=${level}&category=${category}`;
   const response = await fetch(url);
   const data = await response.json();
+  console.log(data);
   const questionObject = {};
   questionObject.question = data.description;
   questionObject.answers = data.answers;
