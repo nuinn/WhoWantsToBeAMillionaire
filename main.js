@@ -449,7 +449,12 @@ async function startGame({ logoContainer, gameSettings, audioLibrary }){
   logoContainer.classList.remove('startGame');
   audioHandler({ sound: 'startGame', audioLibrary });
   setTimeout(async() => {
+    const prizeAnnouncer = document.getElementById('prizeAnnouncer');
+    prizeAnnouncer.innerText = 'Espere, cargando el juego';
+    logoContainer.classList.add('loading');
     await postQuestion({ gameSettings, audioLibrary });
+    prizeAnnouncer.innerText = '';
+    logoContainer.classList.remove('loading');
     unblockGame({ gameSettings, audioLibrary });
   }, 5000);
 }

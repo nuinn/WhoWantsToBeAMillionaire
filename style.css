@@ -113,6 +113,10 @@
   animation: comeAndGo 3s;
 }
 
+#logoContainer.loading #prizeHandler {
+  animation: comeAndGo 2s infinite;
+}
+
 @keyframes comeAndGo {
   0% { opacity: 0; }
   50% { opacity: 1; }
@@ -123,6 +127,10 @@
   opacity: 1;
   font-weight: 900;
   animation: grow 3s;
+}
+
+#logoContainer.loading #prizeAnnouncer {
+  opacity: 1;
 }
 
 @keyframes grow {
@@ -148,7 +156,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 30px;
+  font-size: 25px;
   transition: none;
 }
 
